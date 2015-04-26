@@ -36,9 +36,9 @@ class PolyTreeNode
   end
 
   def node_count
-    cnt = 0
+    cnt = 1
     children.each { |child| cnt += child.node_count }
-    cnt + 1
+    cnt
   end
 
   def dfs(target_value)
@@ -72,6 +72,4 @@ class PolyTreeNode
      end
      path
   end
-
-  
 end
