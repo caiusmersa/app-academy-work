@@ -10,18 +10,17 @@ class PolyTreeNode
 
   def initialize(value)
     @value = value
-    @parent = nil
     @children = []
   end
 
   def parent=(new_parent)
     parent.children.delete(self) unless parent.nil?
+
     @parent = new_parent
     parent.children << self unless parent.nil?
   end
 
   def add_child(child_node)
-    # children << child_node
     child_node.parent = self
   end
 
@@ -31,7 +30,6 @@ class PolyTreeNode
 
   def remove_child(child)
     raise "node is not a child" if !@children.include?(child)
-    # @children.delete(child)
     child.parent = nil
   end
 
@@ -41,18 +39,7 @@ class PolyTreeNode
     cnt
   end
 
-  def dfs(target_value)
-    return self if @value == target_value
-
-    @children.each do |child|
-      found_node = child.dfs(target_value)
-      return found_node if found_node
-    end
-
-    nil
-  end
-
-  def bfs(target_value)
+  def breadth_search(target_value)
     queue = [self]
     until queue.empty?
       check_node = queue.shift

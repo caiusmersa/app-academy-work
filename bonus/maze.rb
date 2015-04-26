@@ -1,14 +1,14 @@
 require 'byebug'
 require 'colorize'
 
-require './00_tree_node.rb'
+require './tree_node.rb'
 
 class Maze < Array
 
   def self.load_file(maze_file)
-    maze_rows = File.readlines(maze_file).map(&:chomp)
-    maze = Maze.new(maze_rows.count, maze_rows.first.length)
-    maze.each_index{ |idx| maze[idx] = maze_rows[idx].chars }
+    maze_rows = File.readlines(maze_file).map(&:chomp).map(&:chars)
+    maze = Maze.new(maze_rows.count, maze_rows.first.count)
+    maze.each_index{ |idx| maze[idx] = maze_rows[idx] }
   end
 
   def initialize(num_rows, num_cols)
@@ -26,8 +26,10 @@ class Maze < Array
     each do |row|
       row.each do |char|
         case char
-        when "*", "+", "|", "-"
+        when "*", "+", "|"
           print char.blue
+        when "-"
+          print char.cyan
         when "S", "E"
           print char.red
         when "."
@@ -69,14 +71,6 @@ class Maze < Array
   def column_count
     first.count
   end
-
-  def height
-    row_count
-  end
-
-  def width
-    column_count
-  end
 end
 
 class MazeSolver
@@ -90,7 +84,7 @@ class MazeSolver
   def solve
     start_time = Time.now
 
-    path = build_move_tree.bfs(find_end).trace_path_back
+    path = build_move_tree.breadth_search(find_end).trace_path_back
     maze_copy = maze.copy
     path.each { |pos| maze_copy.set_val(pos, ".") }
     maze_copy.set_val(find_start, "S")
@@ -151,18 +145,5 @@ class MazeSolver
 end
 
 if __FILE__ == $PROGRAM_NAME
-  puts  "Input 0 to solve small example maze."
-  puts  "Input 1 to solve large example maze."
-  print "Input 2 to solve huge example maze: "
-  case Integer(gets)
-  when 0
-    maze = Maze.load_file("maze.txt")
-  when 1
-    maze = Maze.load_file("big_maze.txt")
-  when 2
-    maze = Maze.load_file("huge_maze.txt")
-  end
-
-  maze_solver = MazeSolver.new(maze)
-  maze_solver.solve
+  maze_solver = MazeSolver.new(Maze.load_file(ARGV[0])).solve
 end
