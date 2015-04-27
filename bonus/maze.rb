@@ -3,7 +3,7 @@ require 'colorize'
 
 require './tree_node.rb'
 
-class Maze < Array
+  class Maze < Array
 
   def self.load_file(maze_file)
     maze_rows = File.readlines(maze_file).map(&:chomp).map(&:chars)
@@ -94,7 +94,7 @@ class MazeSolver
     puts "Solved in #{((Time.now - start_time) * 1000).to_i} miliseconds.".green
   end
 
-  # private
+  private
 
   def build_move_tree
     start_pos = find_start
@@ -116,8 +116,6 @@ class MazeSolver
     moveable_nodes = PolyTreeNode.make_nodes(moveable_pos)
     current_node.add_children(moveable_nodes)
     queue.concat(moveable_nodes)
-
-    queue
   end
 
   def find_end
@@ -145,5 +143,5 @@ class MazeSolver
 end
 
 if __FILE__ == $PROGRAM_NAME
-  maze_solver = MazeSolver.new(Maze.load_file(ARGV[0])).solve
+  maze_solver = MazeSolver.new(Maze.load_file(ARGV.first)).solve
 end
