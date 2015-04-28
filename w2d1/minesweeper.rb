@@ -1,8 +1,8 @@
 require 'set'
-require 'byebug'
 require 'colorize'
 
 class Game
+  
   def self.play!(size, num_mines)
     board = Board.new(size)
     board.seed_bombs(num_mines)
@@ -19,7 +19,6 @@ class Game
     end
 
     Game.game_over(board)
-
   end
 
   private
@@ -65,7 +64,6 @@ class Game
       board.reveal_all
       board.display
     end
-
 end
 
 class Board
