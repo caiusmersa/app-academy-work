@@ -1,11 +1,12 @@
 require 'set'
 require 'byebug'
+require 'colorize'
 
 class Game
   def self.play!(size, num_mines)
     board = Board.new(size)
     board.seed_bombs(num_mines)
-    puts "Welcome to Minesweeper (ASCII edition)"
+    puts "Welcome to Minesweeper (Color ASCII edition)".green
 
     until board.won? || board.lost?
       board.display
@@ -24,13 +25,19 @@ class Game
   private
     def self.get_action
       begin
-        puts "\nWould you like to (f)lag/un(f)lag or (r)eveal a square?"
+        print "\nWould you like to (".green
+        print "f".red
+        print ")lag/un(".green
+        print "f".red
+        print ")lag or (".green
+        print "r".red
+        puts ")eveal a square?".green
         action = $stdin.gets.chomp.downcase
         raise ArgumentError.new("Invalid action!") unless action == "f" || action == "r"
-        puts "Alright, #{action == "f" ? "flag" : "reveal"} it is!"
+        puts "Alright, #{action == "f" ? "flag".red : "reveal".red} it is!".green
 
       rescue
-        puts "Let's try that again..."
+        puts "Let's try that again...".red
         retry
       end
       action
@@ -38,11 +45,11 @@ class Game
 
     def self.get_coords(board)
       begin
-        print "Enter some coordinates, por favor(e.g. 3,5): "
+        print "Enter some coordinates, por favor(e.g. 3,5): ".green
         pos = $stdin.gets.chomp.split(",").map(&:to_i)
         raise ArgumentError.new("Invalid coords!") if pos.count != 2 || board[pos].nil?
       rescue
-        puts "Let's try that again..."
+        puts "Let's try that again...".red
         retry
       end
       pos
@@ -50,9 +57,9 @@ class Game
 
     def self.game_over(board)
       if board.won?
-        puts "You won!! You're a good Minesweeper player and human being!"
+        puts "You won!! You're a good Minesweeper player and human being!".blue
       else
-        puts "You lost! :( but you're still a good human being!"
+        puts "You lost! :(".red + "but you're still a good human being!".green
       end
 
       board.reveal_all
@@ -90,7 +97,7 @@ class Board
 
   def display
     @tiles.each_with_index do |row, row_idx|
-      print "#{row_idx < 10 ? " " + row_idx.to_s : row_idx.to_s} | "
+      print "#{row_idx < 10 ? " " + row_idx.to_s.green : row_idx.to_s.green} | "
 
       row.each do |cell|
         print " " + cell.inspect + " "
@@ -100,7 +107,7 @@ class Board
 
     (@size*3+5).times { print "_" }
     print "\n    "
-    (0...@size).each { |idx| print " #{idx < 10 ? " " + idx.to_s : idx.to_s}" }
+    (0...@size).each { |idx| print " #{idx < 10 ? " " + idx.to_s.green : idx.to_s.green}" }
     print "\n"
   end
 
@@ -126,7 +133,6 @@ class Board
         end
       end
     end
-
 end
 
 
@@ -159,16 +165,16 @@ class Tile
   def inspect
     if @revealed
       if @bombed
-        "X"
+        "X".red
       else
         bombs = neighbor_bomb_count
-        bombs == 0 ? "_" : bombs.to_s
+        bombs == 0 ? "_".blue : bombs.to_s.yellow
       end
     else
       if @flagged
-        "F"
+        "F".red
       else
-        "*"
+        "*".blue
       end
     end
   end
