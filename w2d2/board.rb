@@ -50,9 +50,9 @@ class Board
     #   file.puts(@squares.to_yaml)
     # end
   end
-  
-  def display_ascii
 
+  def display_ascii
+    #awesomeness
   end
 
   def display_board
@@ -117,7 +117,39 @@ class Board
     all_pieces
   end
 
+  def win
+    start_time = Time.now
+    until Time.now - start_time > 6
+      puts File.read("win_art_blank.txt").yellow
+      sleep(0.2)
+      system('cls')
+      puts File.read("win_art_right1.txt").blue
+      sleep(0.2)
+      system('cls')
+      puts File.read("win_art_blank.txt").yellow
+      sleep(0.2)
+      system('cls')
+      puts File.read("win_art_left.txt").red
+      sleep(0.2)
+      system('cls')
+      puts File.read("win_art_blank.txt").yellow
+      sleep(0.2)
+      system('cls')
+      puts File.read("win_art_right2.txt").green
+      sleep(0.2)
+      system('cls')
+      puts File.read("win_art_blank.txt").yellow
+      sleep(0.2)
+      system('cls')
+      puts File.read("win_art_left.txt").magenta
+      sleep(0.2)
+      system('cls')
+      puts File.read("win_art_blank.txt").yellow
+    end
+  end
+
   def opp_color(color)
+    color == :B ? :W : :B
   end
 end
 
