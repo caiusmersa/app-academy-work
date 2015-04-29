@@ -1,0 +1,44 @@
+#This was the code used to generate the init.yml file
+
+def initialize
+  @squares = Array.new(8) { Array.new(8) }
+  # @squares = YAML::load(File.read("init.yml"))  #See history.log
+end
+
+def set_new_game_positions
+  #Place kings
+  @squares[0][4] = King.new([0, 4], self, :B)
+  @squares[7][4] = King.new([7, 4], self, :W)
+
+  # Place queens
+  @squares[0][3] = Queen.new([0, 3], self, :B)
+  @squares[7][3] = Queen.new([7, 3], self, :W)
+
+  # Place rooks
+  @squares[0][0] = Rook.new([0, 0], self, :B)
+  @squares[0][7] = Rook.new([0, 7], self, :B)
+  @squares[7][0] = Rook.new([7, 0], self, :W)
+  @squares[7][7] = Rook.new([7, 7], self, :W)
+
+  # Place knights
+  @squares[0][1] = Knight.new([0, 1], self, :B)
+  @squares[0][6] = Knight.new([0, 6], self, :B)
+  @squares[7][1] = Knight.new([7, 1], self, :W)
+  @squares[7][6] = Knight.new([7, 6], self, :W)
+
+  # Place bishops
+  @squares[0][2] = Bishop.new([0, 2], self, :B)
+  @squares[0][5] = Bishop.new([0, 5], self, :B)
+  @squares[7][2] = Bishop.new([7, 2], self, :W)
+  @squares[7][5] = Bishop.new([7, 5], self, :W)
+
+  # Place pawns
+  (0..7).each do |file|
+    @squares[1][file] = Pawn.new([1, file], self, :B)
+    @squares[6][file] = Pawn.new([1, file], self, :W)
+  end
+
+  # File.open("init.yml", 'w') do |file|
+  #   file.puts(@squares.to_yaml)
+  # end
+end
