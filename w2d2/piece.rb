@@ -217,7 +217,7 @@ class Pawn < Piece
   def display
     "♟"
   end
-  # 
+  #
   # def valid_moves
   #   reg_moves = super
   #
