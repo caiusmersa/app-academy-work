@@ -1,16 +1,23 @@
 
-require './piece.rb'
+require_relative 'piece.rb'
+
 require 'byebug'
 require 'colorize'
 require 'yaml'
 
 class Board
-  attr_accessor :squares
+  attr_accessor :squares, :selected_piece, :selected_sq
+  attr_accessor :white_name, :black_name
+  attr_accessor :player_turn, :count
 
-  def initialize
+  def initialize(init = true)
     @squares = Array.new(8) { Array.new(8) }
+    @selected_piece = nil
+    @selected_sq = [3,3]
     # @squares = YAML::load(File.read("init.yml"))  #See history.log
-    set_new_game_positions
+    set_new_game_positions if init
+    @player_turn = :W if init
+    @count = 2
   end
 
   def set_new_game_positions
@@ -55,7 +62,15 @@ class Board
     #awesomeness
   end
 
-  def display_board
+  def display_board(clear = false)
+    system("clear") if clear
+    puts "\n\n\n"
+    puts "It is turn #{@count / 2}"
+    highlight = selected_piece.valid_moves if selected_piece
+    puts "#{white_name}, it is your move!".green if player_turn == :W
+    puts "#{black_name}, it is your move!".green if player_turn == :B
+    print "#{player_turn == :W ? "White" : "Black"}'s turn. "
+    puts in_check?(player_turn) ? "You're in check!" : ""
     @squares.each_with_index do |row, i|
       print (" " + (8 - i).to_s + " ").yellow.on_magenta
       print " "
@@ -63,26 +78,68 @@ class Board
         to_print = "   " if piece.nil?
         to_print =  " " + piece.display + " " unless piece.nil?
         to_print = piece && piece.color == :B ? to_print.black : to_print.red
-        print (i + j) % 2 == 1 ? to_print.on_blue : to_print.on_white
+        # to_print = to_print.light_red if piece && piece == selected_piece && selected_piece.color == :W
+        # to_print = to_print.light_magenta if piece && piece == selected_piece && selected_piece.color == :B
+        if highlight && highlight.include?([i, j])
+          to_print = (i + j) % 2 == 1 ? to_print.on_green : to_print.on_yellow
+          # to_print = to_print.on_green
+        else
+          to_print = (i + j) % 2 == 1 ? to_print.on_blue : to_print.on_white
+        end
+
+        to_print = to_print.on_magenta if selected_sq == [i, j]
+        print to_print
       end
       puts ""
     end
     puts "   ".on_magenta
     print "    ".yellow.on_magenta
     puts " a  b  c  d  e  f  g  h ".yellow.on_magenta
+    # puts ""
+    # puts "White in check: #{in_check?(:W)}"
+    # puts "Black in check: #{in_check?(:B)}"
+    # puts ""
+    # puts "White checkmated?: #{checkmated?(:W)}"
+    # puts "Black checkmated?: #{checkmated?(:B)}"
+    # puts ""
 
     nil
+  end
+
+  def deep_dup
+    dup_board = Board.new(false)
+    pieces = squares.flatten.compact
+    pieces.each do |piece|
+      row, col = piece.pos[0], piece.pos[1]
+      dup_board.squares[row][col] = piece.deep_dup(dup_board)
+    end
+
+    dup_board.player_turn = player_turn
+    dup_board
   end
 
   def in_check?(color)
     king_pos = find_king_pos(color)
     opponent_pieces = all_pieces(opp_color(color))
-    all_valid_moves = []
-    opponent_pieces.each { |piece| all_valid_moves += piece.valid_moves }
+    opponent_pieces
+      .map { |piece| piece.spaces_threatened }
+      .inject(&:+)
+      .include?(king_pos)
   end
 
-  def inspect
-    nil
+  def no_moves_left?(color)
+    all_pieces(color).map { |piece| piece.valid_moves }
+      .inject(&:+)
+      .empty?
+  end
+
+  def game_over?
+    checkmated?(:W) || checkmated?(:B)
+    #add conditions for draw (stalemate)
+  end
+
+  def checkmated?(color)
+    no_moves_left?(color) && in_check?(color)
   end
 
   def find_king_pos(color)
@@ -98,11 +155,16 @@ class Board
     piece = @squares[old_pos[0]][old_pos[1]]
     @squares[old_pos.first][old_pos.last] = nil
     @squares[new_pos.first][new_pos.last] = piece
+    self.selected_piece = nil
   end
 
   def square(pos)
     return nil unless pos.all? { |coord| (0..7).include?(coord) }
     @squares[pos[0]][pos[1]]
+  end
+
+  def set_square(pos, piece)
+    squares[pos[0]][pos[1]] = piece
   end
 
   def all_pieces(color)
@@ -151,10 +213,4 @@ class Board
   def opp_color(color)
     color == :B ? :W : :B
   end
-end
-
-if __FILE__ == $PROGRAM_NAME
-  game = Board.new
-  game.display_board
-  game.update_square([7,1], [5,2])
 end
