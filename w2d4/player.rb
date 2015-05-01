@@ -35,8 +35,11 @@ class HumanPlayer < Player
     when "\e"                                  # Esc
       exit
     when " ", "\r"                             # Space / Return
-      board.select!(board.get(*cur)) if board.selected_pc.nil?
-      board.unselect! if board.selected_pc == board.get(*cur)
+      if board.selected_pc.nil?
+        board.select!(board.get(*cur))
+      elsif board.selected_pc == board.get(*cur)
+        board.unselect!
+      end
     end
 
     board.cursor = cur

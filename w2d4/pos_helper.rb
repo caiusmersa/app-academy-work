@@ -1,6 +1,6 @@
 SIZE = 10
 
-D_ROW = { :p1 => 1, :p2 => -1 }
+D_ROW = { :p1 => -1, :p2 => 1 }
 
 BRD_COLOR =  { false => { 0 => :on_light_magenta, 1 => :on_magenta },
                true  => { 0 => :on_light_blue,    1 => :on_blue },
