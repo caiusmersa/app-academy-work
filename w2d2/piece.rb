@@ -257,7 +257,7 @@ class Pawn < Piece
   end
 
   def make_move!(end_pos)
-    if pos[2]
+    # if pos[2]
     if end_pos[0] == (color == :B ? 7 : 0)
       @board.set_square(end_pos, Queen.new(end_pos, @board, color, true))
       @board.set_square(pos, nil)
