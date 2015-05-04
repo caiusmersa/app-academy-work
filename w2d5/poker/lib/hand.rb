@@ -60,7 +60,7 @@ class Hand
   end
 
   def straighten!
-    cards.find { |card| card.value == 14 }.value = 1 if cards.map(&:value).sort == [2, 3, 4, 5, 14]
+    cards.find { |card| card.value == 14 }.value = 1 if value_orders == [14, 5, 4, 3, 2]
   end
 
   def straight?
